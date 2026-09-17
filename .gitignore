@@ -1,0 +1,7 @@
+# fetched third-party jars (see build.sh deps)
+lib/
+# build intermediates
+build/
+# desktop harness output
+shots/
+*.log

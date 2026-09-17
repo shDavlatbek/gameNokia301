@@ -1,0 +1,12 @@
+MIDlet-Name: Vanguard Zero
+MIDlet-Vendor: shDavlatbek
+MIDlet-Version: 1.0.0
+MIDlet-Description: Sci-fi first-person shooter with RPG progression
+MIDlet-Icon: /icon.png
+MIDlet-1: Vanguard Zero,/icon.png,vz.Main
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.0
+Nokia-MIDlet-Category: Game
+Nokia-MIDlet-Original-Display-Size: 240,320
+MIDlet-Jar-URL: VanguardZero.jar
+MIDlet-Jar-Size: 33978

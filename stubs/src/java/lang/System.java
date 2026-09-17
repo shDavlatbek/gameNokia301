@@ -1,0 +1,2 @@
+package java.lang;
+public final class System { private System() {} public static final java.io.PrintStream out = null, err = null; public static native void arraycopy(Object s, int so, Object d, int dof, int n); public static native long currentTimeMillis(); public static void exit(int s) {} public static void gc() {} public static String getProperty(String k) { return null; } public static native int identityHashCode(Object o); }

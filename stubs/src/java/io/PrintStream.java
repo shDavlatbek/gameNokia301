@@ -1,0 +1,1 @@
+package java.io; public class PrintStream extends OutputStream { public PrintStream(OutputStream o) {} public void write(int b) {} public void print(String s) {} public void println(String s) {} public void println() {} public void print(int i) {} public void println(int i) {} public void print(Object o) {} public void println(Object o) {} }
