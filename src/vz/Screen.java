@@ -871,7 +871,21 @@ public final class Screen extends GameCanvas implements Runnable {
         g.setColor(C_TEXT);
         g.drawString(Levels.NAME[p.curLevel], w / 2, 24 + bold.getHeight(),
                 Graphics.HCENTER | Graphics.TOP);
-        stats(g, 24 + bold.getHeight() + small.getHeight() * 2);
+        int y = 24 + bold.getHeight() + small.getHeight() * 2;
+        stats(g, y);
+        int below = y + (small.getHeight() + 4) * 4 + 8;
+        if (p.points > 0) {
+            g.setColor(C_XP);
+            g.drawString(Text.SPEND, w / 2, below, Graphics.HCENTER | Graphics.TOP);
+            below += small.getHeight() + 4;
+        }
+        if (p.curLevel < Levels.COUNT - 1) {
+            g.setColor(C_DIM);
+            g.drawString("NEXT SECTOR", w / 2, below, Graphics.HCENTER | Graphics.TOP);
+            g.setColor(C_TEXT);
+            g.drawString(Levels.NAME[p.curLevel + 1], w / 2,
+                    below + small.getHeight(), Graphics.HCENTER | Graphics.TOP);
+        }
         footer(g, Text.PRESS_FIRE);
     }
 
