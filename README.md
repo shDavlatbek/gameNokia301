@@ -122,7 +122,27 @@ loop.
   the build enforces in its `check` step.
 - `./build.sh emu` installs the real jar in MicroEmulator on a virtual X
   display, drives it with synthetic key presses and saves a screenshot of every
-  screen, so the menus and the heads up display get checked too.
+  screen, so the menus and the heads up display get checked too. Every step
+  says what it expected and checks that the screen actually moved, so a
+  control that stops arriving fails the build rather than producing a
+  screenshot nobody looks at twice:
+
+  ```
+  ok    2 walks forward          ok    the left soft key opens the map
+  ok    6 turns                  ok    the right soft key pauses
+  ok    1 strafes                ok    the pause menu opens the upgrades screen
+  ok    5 fires                  ok    the right soft key leaves it again
+  ```
+
+  `EMU_PHASE=2 ./build.sh emu` runs a key probe instead: it presses each host
+  key in a level and reports how much of the screen moved. That is worth
+  having because MicroEmulator's resizable device maps the host's **numeric
+  keypad to the direction pad**, not to the phone's digits, so `NUMPAD0` and
+  `NUMPAD9` arrive as nothing at all and `NUMPAD2` arrives as "down". An
+  earlier version of the script used the numeric keypad throughout and looked
+  like it worked, because walking backwards changes the view as much as
+  walking forwards does — while strafing, the weapon keys and the use key
+  were never really pressed. The phone's digits are the host's top row.
 
 ## Layout
 
