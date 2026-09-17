@@ -17,6 +17,9 @@ import javax.imageio.ImageIO;
  */
 public final class EmuDrive {
 
+    /** Height of the MicroEmulator menu bar above the device screen. */
+    private static final int MENU_BAR = 20;
+
     private static Robot robot;
     private static String dir;
     private static int shot;
@@ -106,11 +109,13 @@ public final class EmuDrive {
     private static void grab(String name) throws Exception {
         Rectangle all = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         BufferedImage img = robot.createScreenCapture(all);
-        // the emulator window sits at the top left; crop to the device screen
+        // The emulator window sits at the top left with a menu bar above the
+        // device screen. Crop to the 240x320 screen itself so the shots show
+        // only what the phone would show.
         int x = 0;
-        int y = 0;
-        int w = Math.min(260, img.getWidth());
-        int h = Math.min(380, img.getHeight());
+        int y = MENU_BAR;
+        int w = Math.min(240, img.getWidth());
+        int h = Math.min(320, img.getHeight() - y);
         BufferedImage crop = img.getSubimage(x, y, w, h);
         ImageIO.write(crop, "png", new File(dir + "/" + name + ".png"));
         shot++;

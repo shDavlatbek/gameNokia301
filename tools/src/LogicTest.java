@@ -444,6 +444,42 @@ public final class LogicTest {
         }
         check(back.hp == bhp, "enemies behind the player are not hit");
 
+        // an enemy without line of sight must not be able to hurt the player
+        w.start(0, p);
+        for (int i = 0; i < w.nEnts; i++) {
+            w.ents[i].active = false;
+        }
+        Entity walled = w.ents[0];
+        int wx = -1;
+        int wy = -1;
+        for (int sy = 1; sy < w.lvl.h - 1 && wx < 0; sy++) {
+            for (int sx = 1; sx < w.lvl.w - 3; sx++) {
+                // a free cell whose neighbour two cells away is also free,
+                // with a wall in between
+                if (!w.lvl.solid(sx, sy) && w.lvl.solid(sx + 1, sy)
+                        && !w.lvl.solid(sx + 2, sy)) {
+                    wx = sx;
+                    wy = sy;
+                    break;
+                }
+            }
+        }
+        if (wx > 0) {
+            w.px = (wx << 16) + FX.HALF;
+            w.py = (wy << 16) + FX.HALF;
+            walled.spawn(Entity.T_TROOPER, wx + 2, wy);
+            walled.state = Entity.S_CHASE;
+            w.nEnts = 1;
+            p.hp = p.maxHp();
+            p.armor = 0;
+            for (int i = 0; i < 200; i++) {
+                w.tick(0, 0);
+            }
+            check(p.hp == p.maxHp(), "an enemy behind a wall cannot shoot the player");
+        } else {
+            note("no wall sandwich found to test through wall shooting");
+        }
+
         // damage scales with the power stat
         Player strong = new Player();
         strong.pow = Balance.MAX_STAT;
@@ -464,6 +500,26 @@ public final class LogicTest {
                             lvl.tickDoors();
                         }
                         check(!lvl.solid(x, y), "an open door can be walked through");
+
+                        // holding the use key must not restart the slide
+                        lvl.load(n);
+                        boolean stillOpens = false;
+                        for (int i = 0; i < Balance.DOOR_TICKS * 3; i++) {
+                            lvl.openDoor(x, y, 0);
+                            lvl.tickDoors();
+                            if (!lvl.solid(x, y)) {
+                                stillOpens = true;
+                                break;
+                            }
+                        }
+                        check(stillOpens, "a door opens even while use is held down");
+                        lvl.load(n);
+                        lvl.openDoor(x, y, 0);
+                        lvl.tickDoors();
+                        int mid = lvl.doorOpenAt(x, y);
+                        lvl.openDoor(x, y, 0);
+                        check(lvl.doorOpenAt(x, y) >= mid,
+                                "pressing use again never rewinds a door");
                         return2(lvl, n);
                         return;
                     }

@@ -936,6 +936,13 @@ public final class Screen extends GameCanvas implements Runnable {
                 Raycaster.VIEW_H, false);
         if (world.showMap) {
             drawMap(g);
+            if (fps > 0) {
+                g.setFont(small);
+                g.setColor(C_DIM);
+                g.drawString(build("FPS ", fps), getWidth() - 4,
+                        Raycaster.VIEW_H - small.getHeight() - 2,
+                        Graphics.RIGHT | Graphics.TOP);
+            }
         }
         drawHud(g);
         if (world.msg != null) {
@@ -1034,10 +1041,7 @@ public final class Screen extends GameCanvas implements Runnable {
             g.setColor(C_DIM);
             g.drawString("0 USE   # MAP   * MENU", 4, row, Graphics.LEFT | Graphics.TOP);
         }
-        if (fps > 0 && world.showMap) {
-            g.setColor(C_DIM);
-            g.drawString(build("FPS ", fps), w - 4, y + 4, Graphics.RIGHT | Graphics.TOP);
-        }
+
     }
 
     private String build(String label, int value) {

@@ -175,7 +175,9 @@ public final class Level {
             return 0;
         }
         int d = doorAt[(cy << SHIFT) + cx];
-        if (d < 0 || doorOpen[d] >= FX.ONE) {
+        // Already open, or already sliding: pressing use again must not
+        // restart the animation, or holding the key keeps the door shut.
+        if (d < 0 || doorOpen[d] > 0) {
             return 0;
         }
         int need = keyFor(c);

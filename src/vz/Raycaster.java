@@ -410,8 +410,8 @@ public final class Raycaster {
         int scale = 3;
         int bob = (FX.sin(w.bob) * 3) >> 16;
         int kick = w.flash > 0 ? 4 : 0;
-        int dx = (SCREEN_W - artW * scale) / 2 + 14 + ((FX.cos(w.bob) * 2) >> 16);
-        int dy = VIEW_H - Sprites.H[frame] * scale + 10 + bob + kick;
+        int dx = (SCREEN_W - artW * scale) / 2 + ((FX.cos(w.bob) * 2) >> 16);
+        int dy = VIEW_H - Sprites.H[frame] * scale + 4 + bob + kick;
         if (w.flash > 0) {
             int fw = Sprites.W[Sprites.FLASH] * 4;
             blitScreen(Sprites.FLASH, dx + artW * scale / 2 - fw / 2, dy - 22, 4);

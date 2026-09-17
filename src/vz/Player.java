@@ -76,10 +76,13 @@ public final class Player {
         return Balance.xpToNext(level);
     }
 
-    /** Start of a level: full health, keycards dropped, armour kept. */
+    /** Start of a level: full health, keycards dropped, a little armour. */
     public void enterLevel() {
         hp = maxHp();
         keys = 0;
+        if (armor < Balance.START_ARMOR) {
+            armor = Balance.START_ARMOR;
+        }
         if (armor > armorCap()) {
             armor = armorCap();
         }

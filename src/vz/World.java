@@ -218,9 +218,48 @@ public final class World {
         if (mx != 0 || my != 0) {
             bob = (bob + 150) & FX.ANG_MASK;
             // one axis at a time, which is what gives wall sliding
-            px = slideX(px, py, mx, Balance.RADIUS);
-            py = slideY(px, py, my, Balance.RADIUS);
+            int nx = slideX(px, py, mx, Balance.RADIUS);
+            boolean blockedX = mx != 0 && nx == px;
+            px = nx;
+            int ny = slideY(px, py, my, Balance.RADIUS);
+            boolean blockedY = my != 0 && ny == py;
+            py = ny;
+            // A body half a cell wide catches on corners when the player is
+            // off centre in a one cell corridor, and a keypad cannot steer
+            // finely enough to avoid that. When a move is blocked, ease
+            // towards the middle of the corridor so the player slips through.
+            if (blockedX) {
+                py = recentre(py, true);
+            }
+            if (blockedY) {
+                px = recentre(px, false);
+            }
         }
+    }
+
+    /**
+     * Nudge one coordinate towards the centre of its cell, but only as far as
+     * the walls allow.
+     */
+    private int recentre(int v, boolean vertical) {
+        int centre = (v & ~0xFFFF) + FX.HALF;
+        int delta = centre - v;
+        if (delta == 0) {
+            return v;
+        }
+        int step = Balance.NUDGE;
+        if (delta < 0) {
+            step = -step;
+            if (step < delta) {
+                step = delta;
+            }
+        } else if (step > delta) {
+            step = delta;
+        }
+        if (vertical) {
+            return slideY(px, v, step, Balance.RADIUS);
+        }
+        return slideX(v, py, step, Balance.RADIUS);
     }
 
     /**
@@ -307,8 +346,9 @@ public final class World {
         for (int i = 0; i < nEnts; i++) {
             Entity e = ents[i];
             if (e.active && e.isEnemy() && e.state == Entity.S_IDLE
-                    && dist(e) < Balance.WAKE_RANGE) {
+                    && dist(e) < Balance.NOISE_RANGE) {
                 e.state = Entity.S_CHASE;
+                e.cooldown = Balance.REACTION;
             }
         }
         int hitIdx = target(Balance.W_SPREAD[w]);
@@ -412,12 +452,17 @@ public final class World {
                 continue;
             }
             int d = dist(e);
-            boolean sees = (tick + i) % 5 == 0
-                    ? lvl.sight(px, py, e.x, e.y)
-                    : e.state != Entity.S_IDLE;
+            // Line of sight is the expensive part, so it is refreshed every
+            // fifth tick and cached per entity. Reusing "is awake" instead
+            // would let enemies shoot straight through walls.
+            if ((tick + i) % 5 == 0) {
+                e.sees = lvl.sight(px, py, e.x, e.y);
+            }
+            boolean sees = e.sees;
             if (e.state == Entity.S_IDLE) {
                 if (d < Balance.WAKE_RANGE && sees) {
                     e.state = Entity.S_CHASE;
+                    e.cooldown = Balance.REACTION;   // a moment to react
                 }
                 continue;
             }
@@ -480,7 +525,8 @@ public final class World {
         boolean hits = true;
         if (!melee) {
             int cells = d >> 16;
-            int chance = FX.clamp(85 - 6 * cells, 30, 85);
+            int chance = FX.clamp(Balance.ACCURACY - 6 * cells, 25,
+                    Balance.ACCURACY);
             hits = FX.rnd(100) < chance;
         }
         if (hits) {

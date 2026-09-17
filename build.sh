@@ -11,7 +11,7 @@
 #      AND preverifies (writes CLDC StackMap attributes, class major version 47)
 #   4. write the .jad with the exact jar size
 #
-# Usage: ./build.sh [deps|stubs|compile|check|jar|shrink|jad|verify|all|tools|test|shots|emu|clean]
+# Usage: ./build.sh [deps|stubs|compile|check|jar|shrink|jad|verify|all|tools|test|play|shots|emu|clean]
 # With no argument it runs `all`.
 
 set -eu
@@ -170,6 +170,14 @@ cmd_test() {
     cmd_tools
     say "logic tests"
     java -cp "$BUILD/tools:$BUILD/classes" LogicTest
+    say "campaign playthrough (bot)"
+    java -cp "$BUILD/tools:$BUILD/classes" PlayBot
+}
+
+cmd_play() {
+    cmd_tools
+    say "campaign playthrough (bot)"
+    java -cp "$BUILD/tools:$BUILD/classes" PlayBot -v
 }
 
 cmd_shots() {
@@ -215,9 +223,10 @@ case "${1:-all}" in
     verify)  cmd_verify ;;
     tools)   cmd_tools ;;
     test)    cmd_test ;;
+    play)    cmd_play ;;
     shots)   cmd_shots ;;
     emu)     cmd_emu ;;
     clean)   cmd_clean ;;
     all)     cmd_all ;;
-    *) echo "usage: $0 [deps|stubs|compile|check|jar|shrink|jad|verify|all|tools|test|shots|emu|clean]" >&2; exit 2 ;;
+    *) echo "usage: $0 [deps|stubs|compile|check|jar|shrink|jad|verify|all|tools|test|play|shots|emu|clean]" >&2; exit 2 ;;
 esac

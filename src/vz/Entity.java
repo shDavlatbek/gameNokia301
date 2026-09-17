@@ -44,6 +44,8 @@ public final class Entity {
     public int dirX;
     public int dirY;
     public boolean active;
+    /** Cached line of sight to the player, refreshed every few ticks. */
+    public boolean sees;
     /** Camera space depth, filled in by the raycaster each frame. */
     public int depth;
     public int screenX;
@@ -71,6 +73,7 @@ public final class Entity {
         dirX = 0;
         dirY = 0;
         active = true;
+        sees = false;
         depth = 0;
         screenX = 0;
         if (t <= T_BOSS) {
