@@ -398,27 +398,36 @@ public final class Screen extends GameCanvas implements Runnable {
         if (!pressedOk(tap)) {
             return;
         }
-        String pick = items[menuSel];
-        if (pick == Text.MENU_SAVE[0] && hasSave) {
-            scroll = 0;
-            state = ST_BRIEF;
-        } else if (pick.equals("NEW CAMPAIGN")) {
-            p.reset();
-            hasSave = false;
-            SaveStore.clear();
-            scroll = 0;
-            state = ST_BRIEF;
-        } else if (pick.equals("OPTIONS")) {
-            menuSel = 0;
-            state = ST_OPTIONS;
-        } else if (pick.equals("HOW TO PLAY")) {
-            scroll = 0;
-            state = ST_HELP;
-        } else if (pick.equals("ABOUT")) {
-            scroll = 0;
-            state = ST_ABOUT;
-        } else {
-            app.exit();
+        // Dispatch on the position in the list, shifted by one when the
+        // Continue entry is present, so no string comparisons are needed.
+        int pick = hasSave ? menuSel : menuSel + 1;
+        switch (pick) {
+            case 0:
+                scroll = 0;
+                state = ST_BRIEF;
+                break;
+            case 1:
+                p.reset();
+                hasSave = false;
+                SaveStore.clear();
+                scroll = 0;
+                state = ST_BRIEF;
+                break;
+            case 2:
+                menuSel = 0;
+                state = ST_OPTIONS;
+                break;
+            case 3:
+                scroll = 0;
+                state = ST_HELP;
+                break;
+            case 4:
+                scroll = 0;
+                state = ST_ABOUT;
+                break;
+            default:
+                app.exit();
+                break;
         }
     }
 
@@ -433,7 +442,7 @@ public final class Screen extends GameCanvas implements Runnable {
     }
 
     private int flags() {
-        int f = SaveStore.F_HAS_SAVE;
+        int f = hasSave ? SaveStore.F_HAS_SAVE : 0;
         if (Sfx.on) {
             f |= SaveStore.F_SOUND;
         }

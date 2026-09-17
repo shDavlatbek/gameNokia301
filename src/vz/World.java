@@ -674,13 +674,10 @@ public final class World {
         int cy = py >> 16;
         for (int y = cy - 3; y <= cy + 3; y++) {
             for (int x = cx - 3; x <= cx + 3; x++) {
-                if (x == cx && y == cy) {
-                    lvl.markSeen(x, y);
-                } else if (lvl.sight(px, py, (x << 16) + FX.HALF, (y << 16) + FX.HALF)) {
-                    lvl.markSeen(x, y);
-                } else if (!lvl.solid(x, y)) {
-                    continue;
-                } else {
+                boolean touching = x >= cx - 1 && x <= cx + 1
+                        && y >= cy - 1 && y <= cy + 1;
+                if (touching || lvl.sight(px, py, (x << 16) + FX.HALF,
+                        (y << 16) + FX.HALF)) {
                     lvl.markSeen(x, y);
                 }
             }
